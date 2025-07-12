@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dlt-calc"
+version = "0.1.0"
+description = "Symbolic computation for equations in 'The Principles of Deep Learning Theory'"
+authors = [
+    { name = "Hung-Yen Chung" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "sympy"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

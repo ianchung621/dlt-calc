@@ -4,6 +4,9 @@ def is_random_expr(expr: Basic) -> bool:
     """
     Recursively determine if an expression involves randomness.
     """
+    if isinstance(expr, ExpVal):
+        return False  # 𝔼[X] is deterministic, even if X is random
+    
     if getattr(expr, 'is_random', False):
         return True
     if isinstance(expr, Sum):
@@ -38,6 +41,11 @@ class ExpVal(Function):
 
     @classmethod
     def eval(cls, expr):
+
+        # Flatten E(E(...))
+        if isinstance(expr, cls):
+            return cls(expr.args[0])
+
         # Linearity over Add
         if isinstance(expr, Add):
             return Add(*[cls(arg) for arg in expr.args])
@@ -60,10 +68,6 @@ class ExpVal(Function):
             det_expr = Mul(*det_terms)
 
             return det_expr * cls(rand_expr)
-
-        # Fully deterministic
-        #if not getattr(expr, 'is_random', False):
-            #return expr
 
         return  # Atomic random variable: unevaluated
 

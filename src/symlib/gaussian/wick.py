@@ -1,5 +1,5 @@
 import sympy as sp
-from .expectation import ExpVal
+from ..random import ExpVal
 
 def wick(expr: ExpVal):
     """
@@ -18,6 +18,8 @@ def wick(expr: ExpVal):
     inner = expr.args[0] # RVs 
 
     if not isinstance(inner, sp.Mul): # parse pruduct rv1 * rv2 * ... only
+        if getattr(inner, 'is_gaussian', False):
+            return 0
         return expr
 
     terms = list(inner.args) # [rv1, rv2, ...]
@@ -47,6 +49,6 @@ def wick_contraction(expr: sp.Expr) -> sp.Expr:
     Recursively apply Wick contraction to all ExpVal(...) nodes in the expression.
     """
     return expr.replace(
-        lambda e: isinstance(e, ExpVal) and isinstance(e.args[0], sp.Mul),
+        lambda e: isinstance(e, ExpVal),
         lambda e: wick(e)
     )

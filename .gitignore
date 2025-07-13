@@ -6,3 +6,4 @@ DLtheory.pdf
 .vscode/
 *.egg-info/
 dev/
+scripts/

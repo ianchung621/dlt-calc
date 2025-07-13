@@ -39,8 +39,11 @@ def wick(expr: ExpVal):
                 for rest in pairings(xs[1:i] + xs[i+1:]):
                     yield [(x0, xs[i])] + rest
 
+    # Determine expectation class (ExpVal, GaussianEval, etc.)
+    Ecls = type(expr)
+
     return sp.Add(*[
-        sp.Mul(*[ExpVal(a * b) for a, b in pair])
+        sp.Mul(*[Ecls(a * b, *expr.args[1:]) for a, b in pair])
         for pair in pairings(terms)
     ])
 

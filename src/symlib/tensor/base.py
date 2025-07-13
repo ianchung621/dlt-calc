@@ -1,4 +1,5 @@
 from sympy import IndexedBase, Indexed
+from typing import Self
 
 class TensorIndexedBase(IndexedBase):
     def __new__(cls, label, *, is_random=False, is_gaussian=False, symmetries=None, **kwargs):
@@ -20,3 +21,6 @@ class TensorIndexed(Indexed):
         obj.is_gaussian = getattr(base, "is_gaussian", False)
         obj.symmetries = getattr(base, "symmetries", None)
         return obj
+    
+    def canonicalize(self) -> Self: # implemented in .symmetry.py
+        raise NotImplementedError("You must inject or override canonicalize()")

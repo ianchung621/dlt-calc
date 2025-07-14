@@ -21,17 +21,24 @@ def all_nontrivial_partitions(seq: tuple[sp.Symbol, ...]) -> list[list[list[sp.S
             [['a'], ['b'], ['c']]
         ]
     """
-    def partitions(seq: tuple[sp.Symbol, ...]) -> Generator[list[list[sp.Symbol]], None, None]:
-        if len(seq) == 1: 
-            yield [list(seq)]
-            return
-        first = seq[0]
-        for smaller in partitions(seq[1:]):
-            for i in range(len(smaller)):
-                new_subset = [first] + list(smaller[i])
-                yield smaller[:i] + [new_subset] + smaller[i+1:]
-            yield [[first]] + smaller
-    return [p for p in partitions(seq) if len(p) > 1]
+    if not seq:
+        return []
+
+    partitions: list[list[list[sp.Symbol]]] = [[[seq[0]]]]
+
+    for symbol in seq[1:]:
+        new_partitions = []
+        for part in partitions:
+            # Insert symbol into each subset
+            for i in range(len(part)):
+                new_part = [subset.copy() for subset in part]
+                new_part[i].append(symbol)
+                new_partitions.append(new_part)
+            # Add symbol as its own subset
+            new_partitions.append(part + [[symbol]])
+        partitions = new_partitions
+
+    return [p for p in partitions if len(p) > 1]
 
 def __cached_with_doc(fn):
     return lru_cache(maxsize=None)(wraps(fn)(fn))

@@ -1,5 +1,5 @@
 from typing import Generator
-from functools import lru_cache, wraps
+from functools import cache, wraps
 
 import sympy as sp
 
@@ -41,7 +41,8 @@ def all_nontrivial_partitions(seq: tuple[sp.Symbol, ...]) -> list[list[list[sp.S
     return [p for p in partitions if len(p) > 1]
 
 def __cached_with_doc(fn):
-    return lru_cache(maxsize=None)(wraps(fn)(fn))
+    return cache(wraps(fn)(fn))
+
 
 @__cached_with_doc
 def connected_correlator(

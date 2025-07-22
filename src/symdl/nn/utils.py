@@ -1,7 +1,7 @@
 from sympy import symbols
 
 from .indexed import SampleIdx, NeuronIdx
-from ..tensor.base import TensorIdx
+from ..tensor.indexed import TensorIdx
 
 def _tensor_symbols(expr: str, cls, *, is_up: bool = False) -> list[TensorIdx]|TensorIdx:
     raw_symbols = symbols(expr, seq=True)

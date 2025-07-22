@@ -1,7 +1,7 @@
 from itertools import permutations, product
 from typing import Literal
 
-from .base import TensorIndexed, TensorIndexedBase
+from .indexed import TensorIndexed, TensorIndexedBase
 
 from itertools import permutations, product
 

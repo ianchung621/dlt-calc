@@ -1,5 +1,5 @@
 import sympy as sp
-from .indexed import NNIndexedBase
+from .indexed import NNIndexedBase, NeuronIdx
 
 class ZLayer:
     _counter = 0  
@@ -23,7 +23,7 @@ class ZLayer:
     def _get_dummy_index(self, prefix='k'):
         """Generate a unique dummy index each call."""
         ZLayer._counter += 1
-        return sp.Symbol(f'{prefix}_{ZLayer._counter}', integer=True)
+        return NeuronIdx(f'{prefix}_{ZLayer._counter}')
 
     def __getitem__(self, idx):
         i, alpha = idx

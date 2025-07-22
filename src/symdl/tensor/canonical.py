@@ -3,7 +3,7 @@ from itertools import permutations, product
 from collections import defaultdict
 
 from sympy import Expr, Symbol, Sum
-from .base import TensorIndexed
+from .indexed import TensorIndexed
 
 def canonicalize_expr(expr: Expr) -> Expr:
     """Canonicalize all TensorIndexed terms in a Expr"""

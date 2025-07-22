@@ -1,9 +1,14 @@
 import sympy as sp
+from .indexed import NNIndexedBase
 
 class ZLayer:
     _counter = 0  
 
-    def __init__(self, W: sp.IndexedBase, b: sp.IndexedBase, x_in: sp.IndexedBase, n_in: sp.Symbol|int):
+    def __init__(self, 
+                 W: sp.IndexedBase | NNIndexedBase, 
+                 b: sp.IndexedBase | NNIndexedBase,
+                 x_in: sp.IndexedBase | NNIndexedBase, 
+                 n_in: sp.Symbol | int):
         self.W = W
         self.b = b
         self.x_in = x_in

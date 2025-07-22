@@ -13,8 +13,8 @@ def pull_sums_out_front(expr: sp.Basic) -> sp.Basic:
     if expr.is_Atom:
         return expr
 
-    if expr.func == sp.Mul or expr.func == sp.Add:
-        # Recurse into arguments
+    if expr.func in {sp.Mul, sp.Add}:
+        
         new_args = [pull_sums_out_front(arg) for arg in expr.args]
 
         # For multiplication: extract Sum factors
@@ -35,11 +35,41 @@ def pull_sums_out_front(expr: sp.Basic) -> sp.Basic:
             final_expr = sp.Mul(*non_sum_factors) * combined_func
             return sp.Sum(final_expr, *combined_limits)
         
-        # For addition: just rebuild
         return expr.func(*new_args)
 
     # Catch-all: recurse into function arguments
     return expr.func(*[pull_sums_out_front(arg) for arg in expr.args])
+
+def pull_coef_out_sum(expr: sp.Basic) -> sp.Basic:
+    """
+    Recursively pulls constant coefficients out of Sum(...) expressions.
+    Assumes independence between coefficients and summation indices.
+    """
+    if isinstance(expr, sp.Sum):
+        inner = pull_coef_out_sum(expr.function)
+
+        # Identify parts of the function that are independent of summation indices
+        free_vars = set().union(*(set(lim[0].free_symbols) for lim in expr.limits))
+        if inner.is_Mul:
+            coeffs = []
+            summand_parts = []
+            for factor in inner.args:
+                if factor.free_symbols.isdisjoint(free_vars):
+                    coeffs.append(factor)
+                else:
+                    summand_parts.append(factor)
+            if coeffs:
+                pulled = sp.Mul(*coeffs)
+                remaining = sp.Mul(*summand_parts)
+                return pulled * sp.Sum(remaining, *expr.limits)
+        return sp.Sum(inner, *expr.limits)
+
+    if expr.is_Atom:
+        return expr
+
+    # Apply recursively to args
+    return expr.func(*[pull_coef_out_sum(arg) for arg in expr.args])
+
 
 def sum_kronecker_contract(expr: sp.Basic) -> sp.Basic:
     """

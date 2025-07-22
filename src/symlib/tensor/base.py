@@ -1,4 +1,4 @@
-from sympy import IndexedBase, Indexed
+from sympy import IndexedBase, Indexed, Symbol
 from typing import Self
 
 class TensorIndexedBase(IndexedBase):
@@ -24,3 +24,17 @@ class TensorIndexed(Indexed):
     
     def canonicalize(self) -> Self: # implemented in .symmetry.py
         raise NotImplementedError("You must inject or override canonicalize()")
+
+class TensorIdx(Symbol):
+
+    is_integer = True
+    is_real = True
+    is_finite = True
+    is_symbol = True
+    is_Atom = True
+    _diff_wrt = True
+    
+    def __new__(cls, name: str, *, is_up: bool = False, **kwargs):
+        obj = super().__new__(cls, name, **kwargs)
+        obj.is_up = is_up
+        return obj

@@ -23,7 +23,7 @@ from .nn import (
     NNIndexedBase,
     NeuronIdx,
     SampleIdx,
-    ZLayer,
+    Layer,
     neuron_indices,
     sample_indices,
 )

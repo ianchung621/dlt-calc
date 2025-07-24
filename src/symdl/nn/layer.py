@@ -1,7 +1,7 @@
 import sympy as sp
 from .indexed import NNIndexedBase, NeuronIdx
 
-class ZLayer:
+class Layer:
     _counter = 0  
 
     def __init__(self, 
@@ -22,13 +22,12 @@ class ZLayer:
 
     def _get_dummy_index(self, prefix='k'):
         """Generate a unique dummy index each call."""
-        ZLayer._counter += 1
-        return NeuronIdx(f'{prefix}_{ZLayer._counter}')
+        Layer._counter += 1
+        return NeuronIdx(f'{prefix}_{Layer._counter}')
 
-    def __getitem__(self, idx):
-        i, alpha = idx
-        k = self._get_dummy_index()
-        return self.b[i] + sp.Sum(self.W[i, k] * self.x_in[k, alpha], (k, 1, self.n_in))
+    @property
+    def preactivation(self):
+        return _PreactivationProxy(self)
     
     @property
     def layer_metric(self):
@@ -37,9 +36,24 @@ class ZLayer:
 
         return _MetricProxy(self)
 
+class _PreactivationProxy:
+
+    def __init__(self, outer: Layer):
+        self.outer = outer
+    
+    def __getitem__(self, idx_pair):
+        i, alpha = idx_pair
+        k = self.outer._get_dummy_index()
+        return (self.outer.b[i]
+                + sp.Sum(
+                    self.outer.W[i, k] * self.outer.x_in[k, alpha],
+                    (k, 1, self.outer.n_in)
+                    )
+                )
+
 class _MetricProxy:
 
-    def __init__(self, outer: ZLayer):
+    def __init__(self, outer: Layer):
         self.outer = outer
 
     def __getitem__(self, idx_pair):

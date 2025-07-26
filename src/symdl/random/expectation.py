@@ -85,5 +85,11 @@ class ExpVal(Function, LinearExpectationMixin):
     @classmethod
     def eval(cls, expr):
         return cls.linear_eval(expr, cls)
+    
+    def _eval_derivative(self, sym):
+        # Forward derivative inside
+        f = self.args[0]
+        new_args = (f.diff(sym), *self.args[1:])  # Replace only the integrand
+        return self.func(*new_args)
 
 

@@ -1,6 +1,7 @@
 from .tensor import (
     SymmetryIndexedBase,
     TensorIdx,
+    TensorIndexed,
     TensorIndexedBase,
     canonicalize_dummy_indices,
 )
@@ -20,6 +21,7 @@ from .gaussian import (
 )
 
 from .nn import (
+    NNIndexed,
     NNIndexedBase,
     NeuronIdx,
     SampleIdx,

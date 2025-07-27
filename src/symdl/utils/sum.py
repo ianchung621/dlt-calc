@@ -78,24 +78,18 @@ def sum_kronecker_contract(expr: sp.Basic) -> sp.Basic:
     """
 
     if isinstance(expr, sp.Sum):
-        # Recursively contract inside sum body
         new_body = sum_kronecker_contract(expr.function)
         new_limits = list(expr.limits)
-
-        # Try to find KroneckerDelta(i, j) where both i and j are summation indices
+        
         for delta in new_body.atoms(sp.KroneckerDelta):
             i, j = delta.args
             sum_indices = [lim[0] for lim in new_limits]
             if i in sum_indices and j in sum_indices:
-                # Replace j by i in body, remove delta, drop redundant limit
-                reduced_body = new_body.subs(j, i).replace(delta, 1)
-
-                # Remove one of the duplicated limits
-                new_limits = [lim for lim in new_limits if lim[0] != j]
+                reduced_body = new_body.subs(j, i).replace(delta, 1) # Replace j by i in body, remove delta, drop redundant limit
+                new_limits = [lim for lim in new_limits if lim[0] != j] # Remove one of the duplicated limits
 
                 return sum_kronecker_contract(sp.Sum(reduced_body, *new_limits))
 
-        # Return reconstructed Sum with possibly simplified body
         return sp.Sum(new_body, *new_limits)
 
     elif isinstance(expr, sp.Add):

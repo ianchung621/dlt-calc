@@ -26,22 +26,12 @@ class NNIndexed(TensorIndexed):
 
             return "".join(parts)
 
-        up_indices = [idx for idx in self.indices if getattr(idx, "is_up", False)]
-        down_indices = [idx for idx in self.indices if not getattr(idx, "is_up", False)]
-
-        upper_str = format_group(up_indices)
-        lower_str = format_group(down_indices)
+        upper_str = format_group(self.up_indices)
+        lower_str = format_group(self.down_indices)
 
         base_str = printer._print(self.base)
 
-        if upper_str and lower_str:
-            return f"{base_str}^{{{upper_str}}}_{{{lower_str}}}"
-        elif upper_str:
-            return f"{base_str}^{{{upper_str}}}"
-        elif lower_str:
-            return f"{base_str}_{{{lower_str}}}"
-        else:
-            return base_str
+        return self.format_latex(base_str, upper_str, lower_str)
 
 class NNIndexedBase(TensorIndexedBase):
     def __getitem__(self, indices) -> NNIndexed:

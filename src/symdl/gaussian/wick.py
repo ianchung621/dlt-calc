@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import sympy as sp
 from ..random import ExpVal
 
@@ -18,11 +20,9 @@ def wick(expr: ExpVal):
     inner = expr.args[0] # RVs 
 
     if not isinstance(inner, sp.Mul): # parse pruduct rv1 * rv2 * ... only
-        if getattr(inner, 'is_gaussian', False):
-            return 0
         return expr
 
-    terms = list(inner.args) # [rv1, rv2, ...]
+    terms = flatten_rvs(inner.args) # [rv1, rv2, ...]
 
     if not all(getattr(t, 'is_gaussian', False) for t in terms): # make sure all RVs are Gaussian
         return expr
@@ -46,6 +46,26 @@ def wick(expr: ExpVal):
         sp.Mul(*[Ecls(a * b, *expr.args[1:]) for a, b in pair])
         for pair in pairings(terms)
     ])
+
+def flatten_rvs(args: Iterable) -> list:
+
+    def is_valid_exponent(exp) -> bool:
+        if isinstance(exp, (int, sp.Integer)):
+            return exp >= 0
+        if isinstance(exp, sp.Symbol):
+            return exp.is_integer and (exp.is_nonnegative is not False)
+        return False
+
+    flat = []
+    for term in args:
+        if isinstance(term, sp.Pow):
+            base, exp = term.args
+            if not is_valid_exponent(exp):
+                raise ValueError("Only non-negative integer powers are supported in Wick expansion.")
+            flat.extend([base] * exp)
+        else:
+            flat.append(term)
+    return flat
 
 def wick_contraction(expr: sp.Expr) -> sp.Expr:
     """

@@ -33,6 +33,7 @@ from .nn import (
 from .utils import (
     pull_coef_out_sum,
     pull_sums_out_front,
+    remove_irrelevant_sums,
     sum_kronecker_contract,
     wild_subs,
     wilds,
